@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
+"""Distributed Sparse Coupled Dictionary Learning
 
-"""SF DECONVOLVE ARGUMENTS
+Supplementary module for passing the input arguments for execution.
 
-This module sets the arguments for sf_deconvolve.py.
+:Author: Nancy Panousopoulou <apanouso@ics.forth.gr>, based on the python script by S. Farrens (CEA)
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:[1] K.  Fotiadou, G. Tsagkatakis, P. Tsakalides `` Linear Inverse Problems with Sparsity Constraints,'' DEDALE DELIVERABLE 3.1, 2016.
+ 
+:[2] K. Fotiadou, G. Tsagkatakis, P. Tsakalides. Spectral Resolution Enhancement via Coupled Dictionary Learning. 2017. Under Review in IEEE Transactions on Remote Sensing.
 
-:Version: 2.4
-
-:Date: 23/10/2017
-
+:Date: 01/02/2018
 """
+
 
 import argparse as ap
 from argparse import ArgumentDefaultsHelpFormatter as formatter
@@ -85,9 +86,6 @@ def get_opts(args=None):
                           help='show this help message and exit')
 
     
-    #optional.add_argument('-q', '--quiet', action='store_true',
-    #                      help='Suppress verbose.')
-
     required.add_argument('-ih', '--inputhigh', required=True,
                           help='Input data file name (high resolution).')
     
