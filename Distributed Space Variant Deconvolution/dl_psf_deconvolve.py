@@ -17,6 +17,11 @@ Notes
 -----
 This code implements equations 8 and 17 from [F2017]_.
 
+Reference Documents for toolbox:
+
+[1] A. Panousopoulou, S. Farrens, S., Y. Mastorakis, J.L. Starck, P. Tsakalides, "A distributed learning architecture for big imaging problems in astrophysics," In 2017 25th European (pp. 1440-1444). IEEE.
+
+[2] S. Farrens, F.M. Ngole Mboula, and J.-L. Starck, “Space variant deconvolution of galaxy survey images,” Astronomy and & Astrophysics, vol. 601, A66 , 2017.
 
 
 """
