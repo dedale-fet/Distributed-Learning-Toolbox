@@ -175,7 +175,7 @@ def run_script(log, partitions_num=1):
     ###########################################################################
     # Perform deconvolution over the distributed learning architecture.
     #@nancypan-forthics    
-    spark_run(data_noisy, psf_data, True, partitions_num, 0, **vars(opts))
+    spark_run(data_noisy, psf_data, False, partitions_num, 0, **vars(opts))
             
     ###########################################################################
 
@@ -244,12 +244,16 @@ def run_script(log, partitions_num=1):
 
 
 def main(args=None):
-
+    
+    
+    
+    global opts
+    opts = get_opts(args)
+    set_out_string()
+    log = set_up_log(opts.output)
+    
     try:
-        global opts
-        opts = get_opts(args)
-        set_out_string()
-        log = set_up_log(opts.output)
+        
         print('*********************')
         print(opts.pn)
         print('*********************')      
