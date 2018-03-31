@@ -31,13 +31,15 @@ from cost import sf_deconvolveCost
 
 import time
 from sp_operators import *
+from sp_gradient import *
+
 from  pyspark import SparkContext
 
 
 from sympy.logic.boolalg import false
 from sf_tools.signal import noise
 import scipy.io as sio
-from pyspark.ml.classification import spark
+
 
 
 
@@ -78,27 +80,28 @@ def calc_spec_rad_rdd(rdd_x, rdddata2, data_shape, data_type='obj_var', toleranc
     
 	for i in range(max_iter):    
 		print("current iteration:")
-        print(i)
+		print(i)
 
-        x_old_norm = np.linalg.norm(np.reshape(np.array(rdd_x.collect()), data_shape))
-        rdd_x = rdd_x.zip(rdddata2).cache()
+		x_old_norm = np.linalg.norm(np.reshape(np.array(rdd_x.collect()), data_shape))
+		rdd_x = rdd_x.zip(rdddata2).cache()
 
-        rdd_x = rdd_x.map(lambda x:sp_psf_convolve([x for k in range(0,1)],rot=False, data_type=data_type))
+		rdd_x = rdd_x.map(lambda x:sp_psf_convolve([x for k in range(0,1)],rot=False, data_type=data_type))
 
-        rdd_x = rdd_x.zip(rdddata2).cache()
+		rdd_x = rdd_x.zip(rdddata2).cache()
+
+		rdd_x = rdd_x.map(lambda x:sp_psf_convolve([x for k in range(0,1)], rot=True, data_type=data_type))
+
+		x_new = np.array(rdd_x.collect()) / x_old_norm
+		if(np.abs(np.linalg.norm(x_new) - x_old_norm) < tolerance):
+			print (' - Power Method converged after %d iterations!' % (i + 1))
+		 	break
+
+		elif i == max_iter - 1:
+			print (' - Power Method did not converge after %d iterations!' % max_iter)
         
-        rdd_x = rdd_x.map(lambda x:sp_psf_convolve([x for k in range(0,1)], rot=True, data_type=data_type))
-        
-        
-        x_new = np.array(rdd_x.collect()) / x_old_norm
-        if(np.abs(np.linalg.norm(x_new) - x_old_norm) < tolerance):
-            print (' - Power Method converged after %d iterations!' % (i + 1))
-            break
-
-        elif i == max_iter - 1:
-            print (' - Power Method did not converge after %d iterations!' % max_iter)
-        print("############################################")
+		print("############################################")
       
+	
 	return np.linalg.norm(x_new)
 ########################################################################
 
@@ -134,7 +137,7 @@ def sp_set_grad_op(data, psf, rdd_data, rdd_psf, **kwargs):
     # Set the gradient operator
     if kwargs['grad_type'] == 'psf_known':
      
-        kwargs['grad_op'] = GradKnownPSF(data, psf,psf_type=kwargs['psf_type'])
+        kwargs['grad_op'] = SP_GradKnownPSF(data, psf,psf_type=kwargs['psf_type'])
         
         kwargs['grad_op'].spec_rad = calc_spec_rad_rdd(rdd_data, rdd_psf, data.shape, data_type='obj_var')
         
@@ -148,8 +151,7 @@ def sp_set_grad_op(data, psf, rdd_data, rdd_psf, **kwargs):
     print(' - Spectral Radius:', kwargs['grad_op'].spec_rad)
     
     if 'log' in kwargs:
-        kwargs['log'].info(' - Spectral Radius: ' +
-                           str(kwargs['grad_op'].spec_rad))
+        kwargs['log'].info(' - Spectral Radius: ' + str(kwargs['grad_op'].spec_rad))
 
     return kwargs
 ########################################################################
@@ -215,13 +217,18 @@ def sp_condat_optimization_sparse(rdd_data, rdd_psf, partitions_num, data_shape,
     			The time elapsed per iteration
     time_tot  : float
     			The total time of execution for the optimization
+    			
+    primal   :np.ndarray
+    		   The resulting primal optimization variable
+    dual	 :np.ndarray
+    			The resulting dual optimization variable		   	
     """
     
     
     wf = kwargs['wavelet_filters']
     print(">>>>>>>>>>>>>>.")
     print(wf.shape)
-    
+    print(data_shape)
     print("<<<<<<<<<<<")
     
     wv_thr_factor = kwargs['wave_thresh_factor']
@@ -248,8 +255,8 @@ def sp_condat_optimization_sparse(rdd_data, rdd_psf, partitions_num, data_shape,
       
     # Combine all rdds into a single one (for the bundle component)
     rdd_in = rdd_data.zip(rdd_psf).zip(rdd_primal).zip(rdd_dual).cache()
+
     
-                
     cost_list = []
     time_all =[]
     
@@ -302,13 +309,21 @@ def sp_condat_optimization_sparse(rdd_data, rdd_psf, partitions_num, data_shape,
     time_tot = time.time()-ttime2 
     print(time_tot)
     
+    fin_data = rdd_in.collect()
     
 	#Optional: save results to hdfs file
-	#folder2results = 'psf_results_smalldata_' + str(partitions_num) + '.txt'
+	#folder2results = 'results_data_' + str(partitions_num) + '.txt'
     
 	#rdd_in.saveAsTextFile(folder2results)
+	#extract the primal & dual opt. variables
+    fin_data = rdd_in.collect()
     
-    return [cost_list, time_all,time_tot] 
+    tmp1, dual = zip(*zip(*zip(*zip(*zip(*fin_data)))))
+
+    tmp2, primal = zip(*zip(*zip(zip(*tmp1))))
+    
+    
+    return [cost_list, time_all,time_tot, np.squeeze(np.array(primal)), np.array(dual)] 
 ###############################################################################
 
 ###############################################################################
@@ -341,6 +356,10 @@ def sp_condat_optimization_lowr(rdd_data, rdd_psf, partitions_num, data_shape, *
 				The time elapsed per iteration
 	time_tot  : float
 				The total time of execution for the optimization
+	primal   :np.ndarray
+    		   The resulting primal optimization variable
+    dual	 :np.ndarray
+    			The resulting dual optimization variable
     """
 
 
@@ -367,56 +386,61 @@ def sp_condat_optimization_lowr(rdd_data, rdd_psf, partitions_num, data_shape, *
  	window = 2#kwargs['cost_window']
  	convergence = kwargs['convergence']
  	lamb = kwargs['lambda']
- 	n_iters = kwargs['n_iter']
+ 	n_iters = 5#kwargs['n_iter']
  	ttime2 = time.time()
  	print('entering optimization...>>>>>>:')
     
 	for i in range(n_iters): 
-        
+
 		print(i)
-        ttime3 = time.time()
-        # calculate the updated primal, dual optimization variables over the distributed architecture
-        rdd_in = rdd_in.map(lambda x:sp_runupdate_lowr(x, lamb, rho, sigma, tau, thres_type = thres_type)).cache()
-        
-        
-        #calculate the cost value over the distributed architecture
-        d1cost = rdd_in.map(lambda x:sp_calc_cost_lowr(x,lamb))
-        
-        #keep the cost value
-        cost_list.append(d1cost.reduce(lambda x,y: x+y))
-        
-        print('time elapsed:')
-        print(time.time()-ttime3)
-        time_all.append(time.time()-ttime3)        
-        if (i+1) % (2 * window):
-            continue
-    
-        else:
-         
-            print(np.log10((np.array(cost_list))))
+		ttime3 = time.time()
+		# calculate the updated primal, dual optimization variables over the distributed architecture
+		rdd_in = rdd_in.map(lambda x:sp_runupdate_lowr(x, lamb, rho, sigma, tau, thres_type = thres_type)).cache()
+
+		#calculate the cost value over the distributed architecture
+		d1cost = rdd_in.map(lambda x:sp_calc_cost_lowr(x,lamb))
+		
+		#keep the cost value
+		cost_list.append(d1cost.reduce(lambda x,y: x+y))
+		
+		print('time elapsed:')
+		print(time.time()-ttime3)
+		time_all.append(time.time()-ttime3)        
+		if (i+1) % (2 * window):
+			continue
+		
+		else:
+			print(np.log10((np.array(cost_list))))
         
         
             #print('time elapsed:')
             #check the convergence of the cost function
-            converged = sp_check_convergence(cost_list, window, convergence)
+			converged = sp_check_convergence(cost_list, window, convergence)
             
-            if converged:
-                print(' - Converged!')
-                break    
-           
-            #clear up your system
-            sc._jvm.System.gc() 
+			if converged:
+				print(' - Converged!')
+				break    
+
+			#clear up your system
+			sc._jvm.System.gc() 
 	
 	print('>>>>total time elapsed:>>>>>>.: ')
 	time_tot = time.time()-ttime2 
  	print(time_tot)
-    
-    #Optional:  save to hdfs file...(save to File or zip with index action)....
-    #folder2results = 'psf_results_smalldata_' + str(partitions_num) + '.txt'
-    
- 	#rdd_in.saveAsTextFile(folder2results)
-    
-	return [cost_list, time_all,time_tot] 
+
+	#Optional:  save to hdfs file...(save to File or zip with index action)....
+	#folder2results = 'psf_results_smalldata_' + str(partitions_num) + '.txt'
+	
+	#rdd_in.saveAsTextFile(folder2results)
+
+    #extract the primal & dual opt. variables
+	fin_data = rdd_in.collect()
+
+	tmp1, dual = zip(*zip(*zip(*zip(*zip(*fin_data)))))
+
+	tmp2, primal = zip(*zip(*zip(zip(*tmp1))))
+
+	return [cost_list, time_all,time_tot, np.squeeze(np.array(primal)), np.array(dual)] 
 
 ####################################################################################
 
@@ -983,6 +1007,7 @@ def spark_run(data, psf, spark_variable = False, partitions_num = 1,iter_num=1,*
     if not spark_variable:
         kwargs = set_grad_op(data, psf, **kwargs)
     else:
+    	
         rdd_x = sc.parallelize(np.random.random(data.shape), partitions_num).cache()
         kwargs = sp_set_grad_op(data,psf, rdd_x, rdd_psf, **kwargs)
         rdd_x.unpersist()
@@ -1037,11 +1062,13 @@ def spark_run(data, psf, spark_variable = False, partitions_num = 1,iter_num=1,*
                 ## no need for weights.
                 if kwargs['lowr_type'] == 'standard':
                 	
-                    [cost_list, time_all, time_tot]= sp_condat_optimization_lowr(rdd_data, rdd_psf, partitions_num, data.shape, **kwargs)
-                
+                    [cost_list, time_all, time_tot, xfinal, yfinal]= sp_condat_optimization_lowr(rdd_data, rdd_psf, partitions_num, data.shape, **kwargs)
+                    print('done with optimization - now saving....!')
                     #store the results of execution into a matfile for further post-processing.
+                    
                     mat2save =  './results' + '_' + kwargs['mode'] + '_' +str(data.shape[0]) + '_' + str(partitions_num) + '_' + str(iter_num) + '_n'+ str(kwargs['n_iter'])  +'.mat'  
-                    sio.savemat(mat2save, {'cost':cost_list, 'time_iters': time_all, 'time_totopt':time_tot,'time_tot':time.time()-time1})
+                    
+                    sio.savemat(mat2save, {'cost':cost_list, 'time_iters': time_all, 'time_totopt':time_tot,'time_tot':time.time()-time1, 'primal_var': xfinal, 'dual_var': yfinal})
                     
                 else:
                     print("This lowr_type is not currently supported. The types supported are: standard")
@@ -1052,11 +1079,12 @@ def spark_run(data, psf, spark_variable = False, partitions_num = 1,iter_num=1,*
             elif kwargs['mode'] == 'sparse':
                 
                                          
-                 [cost_list, time_all, time_tot] = sp_condat_optimization_sparse(rdd_data, rdd_psf, partitions_num, data.shape, **kwargs)
+                 [cost_list, time_all, time_tot, xfinal, yfinal] = sp_condat_optimization_sparse(rdd_data, rdd_psf, partitions_num, data.shape, **kwargs)
                  
                  #store the results of execution into a matfile for further post-processing.
-                 mat2save =  './results1' + '_' + kwargs['mode'] + '_' +str(data.shape[0]) + '_' +str(partitions_num) + '_' + str(iter_num) + '_n'+ kwargs['n_iter'] +  '.mat'  
-                 sio.savemat(mat2save, {'cost':cost_list, 'time_iters': time_all, 'time_totopt':time_tot, 'time_tot':time.time()-time1})
+                 print('done with optimization - now saving....!')
+                 mat2save =  './results' + '_' + kwargs['mode'] + '_' +str(data.shape[0]) + '_' +str(partitions_num) + '_' + str(iter_num) + '_n'+ str(kwargs['n_iter']) +  '.mat'  
+                 sio.savemat(mat2save, {'cost':cost_list, 'time_iters': time_all, 'time_totopt':time_tot, 'time_tot':time.time()-time1, 'primal_var': xfinal, 'dual_var': yfinal})
                  
                    
             else:
@@ -1080,29 +1108,39 @@ def spark_run(data, psf, spark_variable = False, partitions_num = 1,iter_num=1,*
         kwargs['cost_op'].plot_cost()
     '''
     
-    '''
-    # FINISH AND RETURN RESULTS
-    if 'log' in kwargs:
-        kwargs['log'].info(' - Final iteration number: ' +
-                           str(kwargs['cost_op']._iteration))
-        kwargs['log'].info(' - Final log10 cost value: ' +
-                           str(np.log10(kwargs['cost_op'].cost)))
-        kwargs['log'].info(' - Converged: ' +
-                           str(kwargs['optimisation'].converge))
-
-    primal_res = kwargs['optimisation'].x_final
-
-    if kwargs['opt_type'] == 'condat':
-        dual_res = kwargs['optimisation'].y_final
-    else:
-        dual_res = None
-
-    if kwargs['grad_type'] == 'psf_unknown':
-        psf_res = kwargs['grad_op']._psf
-    else:
-        psf_res = None
     
-    return primal_res, dual_res, psf_res
-    '''
+    if not spark_variable: 
+    # FINISH AND RETURN RESULTS
+    	if 'log' in kwargs:
+        	kwargs['log'].info(' - Final iteration number: ' +
+                           str(kwargs['cost_op']._iteration))
+         	kwargs['log'].info(' - Final log10 cost value: ' +
+                           str(np.log10(kwargs['cost_op'].cost)))
+          	kwargs['log'].info(' - Converged: ' + str(kwargs['optimisation'].converge))
+
+      		primal_res = kwargs['optimisation'].x_final
+	  		   
+    		if kwargs['opt_type'] == 'condat':
+         		dual_res = kwargs['optimisation'].y_final
+    	  	else:
+         		dual_res = None
+
+		  	if kwargs['grad_type'] == 'psf_unknown':
+		  		psf_res = kwargs['grad_op']._psf
+		  	else:
+		  		psf_res = None
+		  		
+		
+       	return primal_res, dual_res, psf_res
+    
+    
+    else:
+    	#in the distributed execution we return in a mat file: 
+    	#(a) the cost values in a list, 
+    	#(b) the execution times, 
+    	#(c) the final primal and dual optimization matrices
+    	
+    	return 1   	
+    
 ###################################################################################################################
 

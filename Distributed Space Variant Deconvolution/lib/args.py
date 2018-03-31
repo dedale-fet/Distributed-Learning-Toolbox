@@ -212,4 +212,4 @@ def get_opts(args=None):
     # Return the argument namespace
     
     return parser.parse_args(args)
-    #return parser.parse_args(['--input', 'example/example_image_stack.npy', '--psf_file', 'example/example_psfs.npy', '--output', 'example/example_output_np'])
+    #return parser.parse_args(['--input', 'example/example_image_stack.npy', '--psf_file', 'example/example_psfs.npy', '--output', 'example/example_output_np', '--mode' ,'lowr','--pn', '10', '--n_iter', '5'])
