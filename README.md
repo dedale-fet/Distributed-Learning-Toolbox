@@ -58,17 +58,17 @@ Each of these packages should be installed on all terminals which will comprise 
 
 	v. Cluster configuration parameters. The configuration and environmental parameters for the cluster can be tuned at the file `$SPARK/spark-defaults.conf`.
 
-		* Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
+		- Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
 
 `spark.master spark://XXX.XXX.XXX.XXX:7077` 
 
-		* Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties' file ( `$SPARK\conf\log4j.properties` )
+		- Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties' file ( `$SPARK\conf\log4j.properties` )
 
-		* (If needed:) Define the memory size allocated at the master for spark calculations by accordingly changing the value of variable `spark.driver.memory` at line 32 (in the current configuration: 8GB of RAM) 
+		- (If needed:) Define the memory size allocated at the master for spark calculations by accordingly changing the value of variable `spark.driver.memory` at line 32 (in the current configuration: 8GB of RAM) 
 
-		* (If needed:) Define the memory size allocated at each worker for spark calculations by accordingly changing the value of variable `spark.executor.memory` at line 35 (in the current configuration: 2GB of RAM) 
+		- (If needed:) Define the memory size allocated at each worker for spark calculations by accordingly changing the value of variable `spark.executor.memory` at line 35 (in the current configuration: 2GB of RAM) 
 
-		* Save and close the `$SPARK/conf/spark-defaults.conf` file. 
+		- Save and close the `$SPARK/conf/spark-defaults.conf` file. 
 
 Note: For a complete list of tunable parameters for the cluster configuration consult the documentation available [here](https://spark.apache.org/docs/2.1.1/configuration.html)
 
