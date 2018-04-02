@@ -1,4 +1,4 @@
-# DEDALE Distributed Space Variant Deconvolution (D4.3.1)
+# Distributed Space Variant Deconvolution
 
 ## Introduction
 
@@ -26,7 +26,7 @@ The original Python library (for standalone execution over a small number of sta
 
 For deploymet over the cluster:
 
-* Download the contents of this subfolder sub-folder at the master node with read/write/execute permissions. For the purposes of this guide In this guide, the preselected folder is `/home/user/ds_psf`.
+* Download the contents of this subfolder at the master node at a location with read/write/execute permissions. For the purposes of this guide In this guide, the preselected folder is `/home/user/ds_psf`.
 
 * Compress the `lib` folder,  which contains the deconvolution modules (including both standalone and distributed execution), into `lib.zip`.
 
@@ -39,15 +39,22 @@ The main python script for execution is the `dl_psf_deconvolve.py`. Nevertheless
 
 The format of each entry at the `runexper.sh` is the following:
 
-$SPARK/bin/spark-submit --master spark://`<IP of master node>`:7077 --py-files lib.zip,sf_tools.zip  dl_psf_deconvolve.py -i <input stack of noisy data> -p <input psf> --mode <> --n_iter <number of optimization iterations> --pn <number of blocks per RDD>  > application_log_file.txt
-mv log.out <spark log file>.out
+`$SPARK`/bin/spark-submit --master spark://`<IP of master node>`:7077 --py-files lib.zip,sf_tools.zip  dl_psf_deconvolve.py -i `<input stack of noisy data>`.npy -p `<input psf>`.npy --mode `` --n_iter `<number of optimization iterations>` --pn `<number of blocks per RDD>`  > `<application log file>`.txt
+mv log.out `<spark log file>`.out
 
 where:
-* `<IP of master node>` is the IP of the master node
+*  `$SPARK`: the folder of the spark build version at the master node (e.g., `/usr/local/spark`)
 
-*  `<input stack of noisy data>` is the location of the input data (e.g., example/
+* `<IP of master node>`: the IP of the master node
 
-* 
+*  `<input stack of noisy data>`.npy is the location and name of the input data in npy format (e.g., example_data/100x41x41/example_image_stack)
+
+*   `<input psf>`.npy is the is the location and name of the psf in npy format (e.g., example_data/100x41x41/example_psfs)
+
+*   `<number of optimization iterations>`: is the maximum number of optimization iterations
+
+*   `<number of blocks per RDD>`: is the number of data blocks for splitting the input data. In a typical cluster this number should be at least the double of total available CPU cores (for example if the cluster has 24 CPU cores, then `<number of blocks per RDD>` >=48) 
+
 
 
 ### Input data format
