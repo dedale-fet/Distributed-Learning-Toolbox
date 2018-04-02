@@ -4,7 +4,7 @@
 
 This folder implements the Dedale distributed learning architecture for solving the space variant deconvolution of a large-scale stack of galaxy survey images.
 
-The original Python library (for standalone execution over a small number of stacked images) is available [here](https://github.com/sfarrens/sf_deconvolve).
+The current version of this module is compliant to the original Python library (for standalone execution over a small number of stacked images) which is available [here](https://github.com/sfarrens/sf_deconvolve). 
 
 ## Prerequisities and dependencies
 
@@ -50,19 +50,21 @@ where:
 
 * `<IP of master node>`: the IP of the master node
 
-*  `<input stack of noisy data>`.npy is the location and name of the input data in npy format (e.g., example_data/100x41x41/example_image_stack)
+*  `<input stack of noisy data>`.npy is the location and name of the input data in npy format (e.g., `example_image_stack`) available [here](example_data/100x41x41/))
 
-*   `<input psf>`.npy is the is the location and name of the psf in npy format (e.g., example_data/100x41x41/example_psfs)
+*   `<input psf>`.npy is the is the location and name of the psf in npy format (e.g., `example_psfs` available [here] (example_data/100x41x41/))
 
 *   `<optimization mode>`: The optimisation mode taking one of the values {sparse, lowr}.
 
-*   `<number of optimization iterations>`: is the maximum number of optimization iterations
+*   `<number of optimization iterations>`: The maximum number of optimization iterations
 
 *   `<number of blocks per RDD>`: is the number of data blocks for splitting the input data. In a typical cluster this number should be at least the double of total available CPU cores (for example if the cluster has 24 CPU cores, then `<number of blocks per RDD>` >=48) 
 
 * `<application log file>`.txt: the log file for saving all print-out messages from the execution of the program.
 
 * `<spark log file>`.out: the log file containing the log messages of the Spark master and nodes. 
+
+Note: A complete list of all input parameters for the noisy stack images deconvolution is available [here](https://github.com/sfarrens/sf_deconvolve). 
 
 ### Output
 
@@ -75,6 +77,8 @@ where:
 
 ### Sparsity-based optimization
 
+
+### Large-scale benchmark data and results.
 
 
 ## Reference Documents: 
