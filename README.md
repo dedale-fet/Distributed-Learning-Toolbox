@@ -70,8 +70,6 @@ Each of these packages should be installed on all terminals which will comprise 
 
 Note: For a complete list of tunable parameters for the cluster configuration consult the documentation available [here](https://spark.apache.org/docs/2.1.1/configuration.html)
 
-![](docs/images/spark-cluster/example_cluster.png)
-
 ### Launching/Stopping the cluster
 
 * For starting the cluster: Open a command terminal at the master node and type:
@@ -84,7 +82,7 @@ $SPARK is the location of the spark prebuild files (e.g., /usr/local/spark)
 To check whether the cluster configuration and launching is successful open an internet browser and type `http://XXX.XXX.XXX.XXX:8080/`, where  XXX.XXX.XXX.XXX is the IP of the master node. For example, for a cluster with master node IP 147.52.17.68, the web interface is as follows:
 
 
-
+![](docs/images/spark-cluster/example_cluster.png)
 
 
 * For shutting down the cluster: Open a command terminal at the master node and type:
@@ -95,6 +93,7 @@ $ $SPARK/sbin/stop-master.sh; $SPARK/sbin/stop-slaves.sh
 
 Note: The configuration, launch and stop of the cluster can also be handled through ssh connection at the master node. 
 
+For the complete documentation on spark standalone clusters please refer [here](https://spark.apache.org/docs/2.1.1/spark-standalone.html).
 
 
 ## Reference Documents: 
