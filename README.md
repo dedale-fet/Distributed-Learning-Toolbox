@@ -15,6 +15,20 @@ The toolbox implements the Dedale Distributed Learning Architecture for solving 
 
 Please refer to the documentation in each sub-folder for more details on how to use the toolbox, deploy, and execute each application.
 
+## Prerequisities for deploying and using the toolbox
+
+The implementation of the Distributed Learning Architecture considers the use of the Apache Spark distributed computing framework.
+
+The prerequisities for installing a Spark-compliant cluster over a set of working terminals are:
+
+* Linux OS (tested with Ubuntu 16.04.3 LTS)
+
+* Apache Spark. Tested the version 2.1.1 (pre-build with Apache Hadoop 2.7 and later), which is available for download [here](https://spark.apache.org/downloads.html).
+
+* [Python] (https://www.python.org/). Tested with version 2.7.12.
+
+* Java. Tested with version 1.8.0
+
 
 
 ## Reference Documents: 
