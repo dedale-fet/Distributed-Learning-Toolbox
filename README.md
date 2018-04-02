@@ -47,20 +47,18 @@ Each of these packages should be installed on all terminals which will comprise 
 
 2. On the master node:
 
-	i. Download the folder spark-configurations into a local folder
+	1. Download the folder spark-configurations into a local folder
 
-	ii. Copy contents of spark-configurations into `$SPARK/conf`.
+	2. Copy contents of spark-configurations into `$SPARK/conf`.
 
-	iii. Define the master host: Edit line 50 of the file `$SPARK/conf/spark-env.sh` to bind the master of cluster to the IP of the master terminal. For example, if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
+	3. Define the master host: Edit line 50 of the file `$SPARK/conf/spark-env.sh` to bind the master of cluster to the IP of the master terminal. For example, if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
 `SPARK_MASTER_HOST='XXX.XXX.XXX.XXX'`. Save and close the file.
 
-	iv. Define the slave nodes: Open and edit file `$SPARK/conf/slaves` to indicate the IPs of the worker nodes (line 19 and onwards). Save and close the file.
+	4. Define the slave nodes: Open and edit file `$SPARK/conf/slaves` to indicate the IPs of the worker nodes (line 19 and onwards). Save and close the file.
 
-	v. Cluster configuration parameters. The configuration and environmental parameters for the cluster can be tuned at the file `$SPARK/spark-defaults.conf`.
+	5. Cluster configuration parameters. The configuration and environmental parameters for the cluster can be tuned at the file `$SPARK/spark-defaults.conf`.
 
-		- Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
-
-`spark.master spark://XXX.XXX.XXX.XXX:7077` 
+		- Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign: `spark.master spark://XXX.XXX.XXX.XXX:7077` 
 
 		- Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties' file ( `$SPARK\conf\log4j.properties` )
 
