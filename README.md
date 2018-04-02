@@ -25,7 +25,7 @@ The prerequisities for installing a Spark-compliant cluster over a set of workin
 
 * Apache Spark. Tested the version 2.1.1 (pre-build with Apache Hadoop 2.7 and later), which is available for download [here](https://spark.apache.org/downloads.html).
 
-* [Python] (https://www.python.org/). Tested with version 2.7.12.
+* [Python](https://www.python.org/). Tested with version 2.7.12.
 
 * Java. Tested with version 1.8.0
 
