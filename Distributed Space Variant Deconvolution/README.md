@@ -26,20 +26,23 @@ The original Python library (for standalone execution over a small number of sta
 
 For deploymet over the cluster:
 
-* Download the contents of this subfolder at the master node at a location with read/write/execute permissions. For the purposes of this guide In this guide, the preselected folder is `/home/user/ds_psf`.
+* Download the contents of this subfolder at the master node at a location with read/write/execute permissions. For the purposes of this guide the preselected folder is `/home/user/ds_psf`.
 
-* Compress the `lib` folder,  which contains the deconvolution modules (including both standalone and distributed execution), into `lib.zip`.
+* Compress the `lib` folder,  which contains the deconvolution modules (including both standalone and distributed execution), into `lib.zip` at `/home/user/ds_psf`.
 
-* Compress the `sf_tools` folder, which contains original optimisation and analysis modules (taken from [here](https://github.com/sfarrens/sf_deconvolve)) into `sf_tools.zip`
+* Compress the `sf_tools` folder, which contains original optimisation and analysis modules (taken from [here](https://github.com/sfarrens/sf_deconvolve)) into `sf_tools.zip` at `/home/user/ds_psf`.
 
 
 ## Execution
 
 The main python script for execution is the `dl_psf_deconvolve.py`. Nevertheless, all input parameters for execution can be defined at the `runexper.sh`. 
 
+### Main execution script and optimization parameters.
+
 The format of each entry at the `runexper.sh` is the following:
 
-`$SPARK`/bin/spark-submit --master spark://`<IP of master node>`:7077 --py-files lib.zip,sf_tools.zip  dl_psf_deconvolve.py -i `<input stack of noisy data>`.npy -p `<input psf>`.npy --mode `` --n_iter `<number of optimization iterations>` --pn `<number of blocks per RDD>`  > `<application log file>`.txt
+`$SPARK`/bin/spark-submit --master spark://`<IP of master node>`:7077 --py-files lib.zip,sf_tools.zip  dl_psf_deconvolve.py -i `<input stack of noisy data>`.npy -p `<input psf>`.npy --mode `<optimization mode>` --n_iter `<number of optimization iterations>` --pn `<number of blocks per RDD>`  > `<application log file>`.txt
+
 mv log.out `<spark log file>`.out
 
 where:
@@ -51,22 +54,20 @@ where:
 
 *   `<input psf>`.npy is the is the location and name of the psf in npy format (e.g., example_data/100x41x41/example_psfs)
 
+*   `<optimization mode>`: The optimisation mode taking one of the values {sparse, lowr}.
+
 *   `<number of optimization iterations>`: is the maximum number of optimization iterations
 
 *   `<number of blocks per RDD>`: is the number of data blocks for splitting the input data. In a typical cluster this number should be at least the double of total available CPU cores (for example if the cluster has 24 CPU cores, then `<number of blocks per RDD>` >=48) 
 
+* `<application log file>`.txt: the log file for saving all print-out messages from the execution of the program.
+
+* `<spark log file>`.out: the log file containing the log messages of the Spark master and nodes. 
+
+### Output
 
 
-### Input data format
-
-
-### Operational parameters
-
-
-### Output data format
-
-
-## Examples
+## Execution Examples
 
 
 ### Optimization based on low-rank approximation
@@ -75,7 +76,6 @@ where:
 ### Sparsity-based optimization
 
 
-### 
 
 ## Reference Documents: 
 
