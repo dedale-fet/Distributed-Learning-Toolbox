@@ -15,19 +15,76 @@ The toolbox implements the Dedale Distributed Learning Architecture for solving 
 
 Please refer to the documentation in each sub-folder for more details on how to use the toolbox, deploy, and execute each application.
 
+
 ## Prerequisities for deploying and using the toolbox
 
-The implementation of the Distributed Learning Architecture considers the use of the Apache Spark distributed computing framework.
+### Software packages and Operating System
 
-The prerequisities for installing a Spark-compliant cluster over a set of working terminals are:
+The implementation of the Distributed Learning Architecture considers the use of the Apache Spark distributed computing framework. The prerequisities for installing a Spark-compliant cluster over a set of working terminals are:
 
-* Linux OS (tested with Ubuntu 16.04.3 LTS)
+* Linux OS (tested with Ubuntu 16.04.3 LTS) 
+
+* SSH client-server packages (e.g., the openssh packages available with the Linux distribution).
 
 * Apache Spark. Tested the version 2.1.1 (pre-build with Apache Hadoop 2.7 and later), which is available for download [here](https://spark.apache.org/downloads.html).
 
 * [Python](https://www.python.org/). Tested with version 2.7.12.
 
-* Java. Tested with version 1.8.0
+* Java JDK / RE . Tested with SE version 1.8.0
+
+
+Each of these packages should be installed on all terminals which will comprise the Spark cluster. 
+
+### Spark Cluster configuration
+
+
+* On each terminal for your cluster extract the prebuild version of Spark into a prefered folder with read/write/execute permissions. In this guide, the preselected folder for all terminals is `$SPARK=/usr/local/spark`
+
+* On the master node:
+
+** Download the folder spark-configurations into a local folder
+
+** Copy contents of spark-configurations into `$SPARK/conf`.
+
+** Define the master host: Edit line 50 of the file `$SPARK/conf/spark-env.sh` to bind the master of cluster to the IP of the master terminal. For example, if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
+`SPARK_MASTER_HOST='XXX.XXX.XXX.XXX'`. Save and close the file.
+
+** Define the slave nodes: Open and edit file `$SPARK/conf/slaves` to indicate the IPs of the worker nodes (line 19 and onwards). Save and close the file.
+
+** Cluster configuration parameters. The configuration and environmental parameters for the cluster can be tuned at the file `$SPARK/spark-defaults.conf`.
+
+** Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
+
+`spark.master spark://XXX.XXX.XXX.XXX:7077` 
+
+** Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties' file ( `$SPARK\conf\log4j.properties` )
+
+** If needed: define the memory size allocated at the master for spark calculations by accordingly changing the value of variable `spark.driver.memory` at line 32 (in the current configuration: 8GB of RAM) 
+
+** If needed: Define the memory size allocated at each worker for spark calculations by accordingly changing the value of variable `spark.executor.memory` at line 35 (in the current configuration: 2GB of RAM) 
+
+** Save and close the `$SPARK/conf/spark-defaults.conf` file. 
+
+Note: For a complete list of tunable parameters for the cluster configuration consult the documentation available [here](https://spark.apache.org/docs/2.1.1/configuration.html)
+
+
+
+### Launching/Stopping the cluster.
+
+* For starting the cluster: Open a command terminal at the master node and type:
+
+```bash
+$ $SPARK/sbin/start-master.sh; $SPARK/sbin/start-slaves.sh 
+```
+$SPARK is the location of the spark prebuild files (e.g., /usr/local/spark)
+
+* For shutting down the cluster: Open a command terminal at the master node and type:
+
+```bash
+$ $SPARK/sbin/stop-master.sh; $SPARK/sbin/stop-slaves.sh 
+```
+
+Note: The configuration, launch and stop of the cluster can also be handled through ssh connection at the master node. 
 
 
 
@@ -39,16 +96,4 @@ The prerequisities for installing a Spark-compliant cluster over a set of workin
 
 * S.  Farrens,  F.M.  Ngole  Mboula,  and  J.-L.  Starck,  “Space variant deconvolution of galaxy survey images,”  Astronomy and 
 & Astrophysics, vol. 601, A66 , 2017.
-
-
-
-
-
-
-
-
-
-
-
-
 
