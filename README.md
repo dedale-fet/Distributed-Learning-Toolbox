@@ -1,104 +1,76 @@
-# DEDALE Distributed Learning Toolbox (D4.3)
-
-> Toolbox Main Authors: **Nancy Panousopoulou (FORTH-ICS), Samuel Farrens (CEA), Konstantina Fotiadou (FORTH-ICS), Greg Tsagkatakis (FORTH-ICS)**  
-> Year: **2017-2018**   
-> Corresponding Author Email: [apanouso@ics.forth.gr](mailto:apanouso@ics.forth.gr)
-> Website: [https://github.com/dedale-fet](https://github.com/dedale-fet)  
-
+# DEDALE Distributed Space Variant Deconvolution (D4.3.1)
 
 ## Introduction
 
-This repository contains the Python toolbox for distributed sparsity-based learning architectures, along with benchmarking imaging test sets.
+This folder implements the Dedale distributed learning architecture for solving the space variant deconvolution of a large-scale stack of galaxy survey images.
+
+The original Python library (for standalone execution over a small number of stacked images) is available [here](https://github.com/sfarrens/sf_deconvolve).
+
+## Prerequisities and dependencies
+
+* A Spark-complian cluster, according to the guidelines available [here](../README.md)
+
+* For running the space variant deconvolution modules over the cluster, each of the cluster nodes (master and slaves) should have installed:
+	- [Numpy](http://www.numpy.org/). Tested with vestion 1.13.3
+	- [Scipy](http://www.scipy.org/). Tested with vestion 1.0.0
+	- [Astropy](http://www.astropy.org/). Tested with version 2.0.2 
+	- [Future](https://pypi.python.org/pypi/future). Tested with version 0.16.0
+	- [iSap / Sparse2D library](http://www.cosmostat.org/software/isap) and [cfitsio](https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html) libraries. Tested with iSAP version 3.1. The Sparse2D library should be compiled C++ modules. For a cluster with the 64-bit Ubuntu 16.04 LTS configuration, the precompiled libraries available [here](../docs/useful/) may be used. 
+	For configuring the ISAP library on each terminal of the cluster, add the Sparse2D executables to the $PATH system variable. For example if the ISAP library is compiled at `/home/user/isap`, then:
+		- Open the .profile file at `/home/user/`. 
+		- Define the isap location: `ISAP="$HOME/isap`
+		- Append the `$PATH` variable: `PATH="$ISAP/cxx/sparse2d/bin:$PATH"`
+		- Save and close the .profile file. Log out and log back in for the change on the `$PATH` to take effect.
+
+## Deployment on cluster
+
+For deploymet over the cluster:
+
+* Download the contents of this subfolder sub-folder at the master node with read/write/execute permissions. For the purposes of this guide In this guide, the preselected folder is `/home/user/ds_psf`.
+
+* Compress the `lib` folder,  which contains the deconvolution modules (including both standalone and distributed execution), into `lib.zip`.
+
+* Compress the `sf_tools` folder, which contains original optimisation and analysis modules (taken from [here](https://github.com/sfarrens/sf_deconvolve)) into `sf_tools.zip`
 
 
-The toolbox implements the Dedale Distributed Learning Architecture for solving large-scale imaging problems, associated to:
+## Execution
 
-* Space variant deconvolution of galaxy survey images (package: Distributed Space Variant Deconvolution)
-* Hyperspectral and color image super resolution  (package: Distributed Sparce Coupled Dictionary Learning)
+The main python script for execution is the `dl_psf_deconvolve.py`. Nevertheless, all input parameters for execution can be defined at the `runexper.sh`. 
 
-Prior referring to the the documentation in each sub-folder on how to use the toolbox for each application, please read the following guidelines the prerequisities of the toolbox.
+The format of each entry at the `runexper.sh` is the following:
 
+$SPARK/bin/spark-submit --master spark://`<IP of master node>`:7077 --py-files lib.zip,sf_tools.zip  dl_psf_deconvolve.py -i <input stack of noisy data> -p <input psf> --mode <> --n_iter <number of optimization iterations> --pn <number of blocks per RDD>  > application_log_file.txt
+mv log.out <spark log file>.out
 
-## Prerequisities of the toolbox
+where:
+* `<IP of master node>` is the IP of the master node
 
-The implementation of the Distributed Learning Architecture considers the use of the [Apache Spark distributed computing framework](https://spark.apache.org/).
+*  `<input stack of noisy data>` is the location of the input data (e.g., example/
 
-### Software packages and Operating System
-
-The prerequisities for installing a Spark-compliant cluster over a set of working terminals are:
-
-* Linux OS (tested with 64-bit Ubuntu 16.04.3 LTS) 
-
-* SSH client-server packages (e.g., the openssh packages available with the Linux distribution).
-
-* Apache Spark. Tested the version 2.1.1 (pre-build with Apache Hadoop 2.7 and later), which is available for download [here](https://spark.apache.org/downloads.html).
-
-* [Python](https://www.python.org/). Tested with version 2.7.12.
-
-* Java JDK / RE . Tested with SE version 1.8.0
+* 
 
 
-Each of these packages should be installed on all terminals which will comprise the Spark cluster. 
-
-### Spark cluster configuration
+### Input data format
 
 
-1. On each terminal for your cluster extract the prebuild version of Spark into a prefered folder with read/write/execute permissions. In this guide, the preselected folder for all terminals is `$SPARK=/usr/local/spark`
-
-2. On the master node:
-
-	1. Download the folder spark-configurations into a local folder
-
-	2. Copy contents of spark-configurations into `$SPARK/conf`.
-
-	3. Define the master host: Edit line 50 of the file `$SPARK/conf/spark-env.sh` to bind the master of cluster to the IP of the master terminal. For example, if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign:
-`SPARK_MASTER_HOST='XXX.XXX.XXX.XXX'`. Save and close the file.
-
-	4. Define the slave nodes: Open and edit file `$SPARK/conf/slaves` to indicate the IPs of the worker nodes (line 19 and onwards). Save and close the file.
-
-	5. Cluster configuration parameters. The configuration and environmental parameters for the cluster can be tuned at the file `$SPARK/spark-defaults.conf`.
-
-		- Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign: `spark.master spark://XXX.XXX.XXX.XXX:7077` 
-
-		- Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties' file ( `$SPARK\conf\log4j.properties` )
-
-		- (If needed:) Define the memory size allocated at the master for spark calculations by accordingly changing the value of variable `spark.driver.memory` at line 32 (in the current configuration: 8GB of RAM) 
-
-		- (If needed:) Define the memory size allocated at each worker for spark calculations by accordingly changing the value of variable `spark.executor.memory` at line 35 (in the current configuration: 2GB of RAM) 
-
-		- Save and close the `$SPARK/conf/spark-defaults.conf` file. 
-
-Note: For a complete list of tunable parameters for the cluster configuration consult the documentation available [here](https://spark.apache.org/docs/2.1.1/configuration.html)
-
-### Launching/Stopping the cluster
-
-* For starting the cluster: Open a command terminal at the master node and type:
-
-```bash
-$ $SPARK/sbin/start-master.sh; $SPARK/sbin/start-slaves.sh 
-```
-$SPARK is the location of the spark prebuild files (e.g., /usr/local/spark)
-
-To check whether the cluster configuration and launching is successful open an internet browser and type `http://XXX.XXX.XXX.XXX:8080/`, where  XXX.XXX.XXX.XXX is the IP of the master node. For example, for a cluster with master node IP 147.52.17.68, the web interface is as follows:
+### Operational parameters
 
 
-![](docs/images/spark-cluster/example_cluster.png)
+### Output data format
 
 
-* For shutting down the cluster: Open a command terminal at the master node and type:
+## Examples
 
-```bash
-$ $SPARK/sbin/stop-master.sh; $SPARK/sbin/stop-slaves.sh 
-```
 
-Note: The configuration, launch and stop of the cluster can also be handled through ssh connection at the master node. 
+### Optimization based on low-rank approximation
 
-For the complete documentation on spark standalone clusters please refer [here](https://spark.apache.org/docs/2.1.1/spark-standalone.html).
 
+### Sparsity-based optimization
+
+
+### 
 
 ## Reference Documents: 
-
-* K.  Fotiadou, G. Tsagkatakis, P. Tsakalides, "Linear Inverse Problems with Sparsity Constraints," DEDALE DELIVERABLE 3.1, 2016.  
 
 * A. Panousopoulou, S. Farrens, S., Y. Mastorakis, J.L. Starck, P. Tsakalides, "A distributed learning architecture for big imaging problems in astrophysics," In 2017 25th European (pp. 1440-1444). IEEE.
 
