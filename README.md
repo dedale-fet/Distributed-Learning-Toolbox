@@ -27,7 +27,7 @@ The implementation of the Distributed Learning Architecture considers the use of
 
 The prerequisities for installing a Spark-compliant cluster over a set of working terminals are:
 
-* Linux OS (tested with Ubuntu 16.04.3 LTS) 
+* Linux OS (tested with 64-bit Ubuntu 16.04.3 LTS) 
 
 * SSH client-server packages (e.g., the openssh packages available with the Linux distribution).
 
