@@ -16,10 +16,10 @@ The toolbox implements the Dedale Distributed Learning Architecture for solving 
 * Space variant deconvolution of galaxy survey images (package: Distributed Space Variant Deconvolution)
 * Hyperspectral and color image super resolution  (package: Distributed Sparce Coupled Dictionary Learning)
 
-Prior referring to the the documentation in each sub-folder on how to use the toolbox for each application, please read the following guidelines for deploying and configuring the toolbox.
+Prior referring to the the documentation in each sub-folder on how to use the toolbox for each application, please read the following guidelines the prerequisities of the toolbox.
 
 
-## Prerequisities for deploying and using the toolbox
+## Prerequisities of the toolbox
 
 The implementation of the Distributed Learning Architecture considers the use of the [Apache Spark distributed computing framework](https://spark.apache.org/).
 
@@ -70,7 +70,7 @@ Each of these packages should be installed on all terminals which will comprise 
 
 Note: For a complete list of tunable parameters for the cluster configuration consult the documentation available [here](https://spark.apache.org/docs/2.1.1/configuration.html)
 
-
+![](docs/images/spark-cluster/example_cluster.png)
 
 ### Launching/Stopping the cluster
 
@@ -80,6 +80,12 @@ Note: For a complete list of tunable parameters for the cluster configuration co
 $ $SPARK/sbin/start-master.sh; $SPARK/sbin/start-slaves.sh 
 ```
 $SPARK is the location of the spark prebuild files (e.g., /usr/local/spark)
+
+To check whether the cluster configuration and launching is successful open an internet browser and type `http://XXX.XXX.XXX.XXX:8080/`, where  XXX.XXX.XXX.XXX is the IP of the master node. For example, for a cluster with master node IP 147.52.17.68, the web interface is as follows:
+
+
+
+
 
 * For shutting down the cluster: Open a command terminal at the master node and type:
 
