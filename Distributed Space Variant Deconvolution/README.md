@@ -93,7 +93,7 @@ Upon completion the module stores in a mat file the following information:
 Note: the naming convention of the mat file is as follows:
 
 ```bash
-`results_<optimization mode>_<number of noisy images>_<number of blocks per RDD>_<experiment id>_n<number of optimization iterations>`.mat
+results_<optimization mode>_<number of noisy images>_<number of blocks per RDD>_<experiment id>_n<number of optimization iterations>.mat
 ```
 
 ## Execution Examples
@@ -147,4 +147,4 @@ Considering a stack of 20,000 noisy images the results of distributed sparce var
 * S.  Farrens,  F.M.  Ngole  Mboula,  and  J.-L.  Starck,  “Space variant deconvolution of galaxy survey images,”  Astronomy and 
 & Astrophysics, vol. 601, A66 , 2017.
 
-* A. Panousopoulou, S. Farrens, S., Y. Mastorakis, J.L. Starck, P. Tsakalides, "," DEDALE Deliverable D4.2, 2016.
+* "Large Scale Learning Schemes". DEDALE Deliverable D4.2, 2016.
