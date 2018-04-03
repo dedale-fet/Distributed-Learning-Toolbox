@@ -386,7 +386,7 @@ def sp_condat_optimization_lowr(rdd_data, rdd_psf, partitions_num, data_shape, *
  	window = 2#kwargs['cost_window']
  	convergence = kwargs['convergence']
  	lamb = kwargs['lambda']
- 	n_iters = 5#kwargs['n_iter']
+ 	n_iters = kwargs['n_iter']
  	ttime2 = time.time()
  	print('entering optimization...>>>>>>:')
     
