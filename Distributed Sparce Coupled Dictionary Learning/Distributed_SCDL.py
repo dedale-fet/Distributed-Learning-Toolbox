@@ -268,7 +268,7 @@ def run_script(sc):
     beta = opts.beta #Default value: 0.01
     
     #The learning rate thresholding value
-    lamda = opts.lamba
+    lamda = opts.lamda
     
     #number of iterations for training
     train_iter =opts.n_iter
@@ -339,7 +339,7 @@ def run_script(sc):
     
     m = 0
     mm = 0
-    
+	time_all = []	
     ##keep the error buffer size as an even number.
     if buff_size % 2 == 1:
         buff_size += 1
@@ -503,6 +503,7 @@ def run_script(sc):
         print('Time elapsed for this iteration: ')
         ttime3 = time.time()-ttime3
         print(ttime3)
+        time_all.append(ttime3)
         #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
         
         ##optional: save the results of each iteration in a mat file.
@@ -515,7 +516,7 @@ def run_script(sc):
         
     mat2savefin =  './results_fin' + str(imageN) + 'x' + str(dictsize) + '_' +str(partitions_N) + '.mat'  
         
-    sio.savemat(mat2save, {'dicth':dict_h, 'dictl': dict_l, 'err_l': err_h_all, 'err_h': err_l_all})
+    sio.savemat(mat2save, {'dicth':dict_h, 'dictl': dict_l, 'err_l': err_h_all, 'err_h': err_l_all, 'time_all': time_all})
         
     return 1
 

@@ -110,7 +110,7 @@ def get_opts(args=None):
     
     optional.add_argument('--bands_l', type=int, default=9, help='Number of bands in low resolution')
 
-    optional.add_argument('--lamba', type=float, default=0.1, help='Learning Rate')
+    optional.add_argument('--lamda', type=float, default=0.1, help='Learning Rate')
     
     required.add_argument('-p', '--partitions', help = 'Number of Partitions')
     
