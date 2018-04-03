@@ -4,7 +4,7 @@
 
 This folder implements the Dedale distributed learning architecture for solving the solving the problem of super-resolution, adhering to a sparse-based machine learning technique (Sparce Coupled Dictionary Learning) over a large-scale training dataset.
 
-The current version of this module is compliant to the original Python library (for standalone execution over a small number of stacked images) which is available [here](https://github.com/spl-icsforth/SparseCoupledDictionaryLearning). 
+The current version of this module is compliant to the original Python library (for standalone execution over a small input of training samples) which is available [here](https://github.com/spl-icsforth/SparseCoupledDictionaryLearning). 
 
 ## Prerequisities and dependencies
 
