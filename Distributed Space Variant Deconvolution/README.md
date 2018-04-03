@@ -111,14 +111,14 @@ and `<number of optimization iterations>` = 100, `<number of blocks per RDD>` = 
 
 1. For the low-rank based optimization (i.e. `<optimization mode>` = `lowr`):
 ```bach
-/usr/local/spark/bin/spark-submit --master spark://147.52.17.68:7077 --py-files lib.zip,sf_tools.zip  ds_psf_deconvolve.py -i example_data/100x41x41/example_psfs.npy -p example_data/100x41x41/example_psfs.npy --n_iter 100 --mode lowr --pn 48 > test.txt
+/usr/local/spark/bin/spark-submit --master spark://147.52.17.68:7077 --py-files lib.zip,sf_tools.zip  ds_psf_deconvolve.py -i example_data/100x41x41/example_psfs.npy -p example_data/100x41x41/example_psfs.npy --n_iter 100 --mode lowr --pn 96 > test.txt
 
 mv log.out spark_log.out
 ```
 
 2. For the sparsity-based optimization (i.e. `optimization mode` = `sparse`):
 ```bach
-/usr/local/spark/bin/spark-submit --master spark://147.52.17.68:7077 --py-files lib.zip,sf_tools.zip  ds_psf_deconvolve.py -i example_data/100x41x41/example_psfs.npy -p example_data/100x41x41/example_psfs.npy --n_iter 100 --mode sparse --pn 48 > test.txt
+/usr/local/spark/bin/spark-submit --master spark://147.52.17.68:7077 --py-files lib.zip,sf_tools.zip  ds_psf_deconvolve.py -i example_data/100x41x41/example_psfs.npy -p example_data/100x41x41/example_psfs.npy --n_iter 100 --mode sparse --pn 96 > test.txt
 
 mv log.out spark_log.out
 ```
