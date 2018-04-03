@@ -131,12 +131,13 @@ $ ./runexper.sh
 
 The status of execution is indicated at the cluster web-interface:
 
-
-
+![](../docs//images/distributed-psf/execution_example.png)
 
 
 ### Large-scale imaging datasets and results
+Considering a stack of 20,000 noisy images the results of distributed sparce variant deconvolution w.r.t. to (a) time of execution, and (b) convergence over time are the following:
 
+![](../docs//images/distributed-psf/results20000.png)
 
 
 ## Reference Documents: 
