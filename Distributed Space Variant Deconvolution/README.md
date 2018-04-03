@@ -35,7 +35,7 @@ For deploymet over the cluster:
 
 ## Execution
 
-The main python script for execution is the `dl_psf_deconvolve.py`. Nevertheless, all input parameters for execution can be defined at the `runexper.sh`. 
+The main python script for execution is the `dl_psf_deconvolve.py`, nevertheless all input parameters for execution can be defined at the `runexper.sh`. 
 
 ### Main execution script and optimization parameters.
 
@@ -64,21 +64,79 @@ where:
 
 * `<spark log file>`.out: the log file containing the log messages of the Spark master and nodes. 
 
-Note: A complete list of all input parameters for the noisy stack images deconvolution is available [here](https://github.com/sfarrens/sf_deconvolve). 
+Note: A complete list of all input parameters for the noisy stack images deconvolution is available [here](https://github.com/sfarrens/sf_deconvolve). Nevertheless, the distributed space variant deconvolution herein provided supports the following configuration:
 
-### Output
+* Optimization (input argument `--mode`): Low-rank (`lowr`) and sparsity-based (`sparse`)
+* Gradient type (input parameter `--grad_type`):  Implementation of deconvolution with PSFs provided (`psf_known`).
+* Optimization method (input parameter `--opt_type`): Condat-Vu proximal splitting method (`condat`).
+* PSF type (input parameter `--psf_type`) for convolution: Spatially variant (`obj_var`)
+* Type of low-rank regularisation (input parameter `--lowr_type`): Standard (`standard`).
 
+
+### Termination criteria and output
+The module terminates when either the maximum number of iterations (`--n_iter`) has been reached or the convergence of the cost function over a sliding window (of length `--cost_window`) is below a predefined threshold (`--tolerance`). 
+
+Upon completion the module stores in a mat file the following information:
+
+* The final value of the primal optimization variable (`primal_var` : np.ndarray)
+
+* The final value of the dual optimization variable (`dual_var` : np.ndarray)
+
+* The values of the cost function calculated within the optimization loop (`cost`: list)
+
+* The execution time per optimization iteration (`time_iters` : list)
+
+* The total execution time for the optimization (`time_totopt` : float)
+
+* The total execution time for the module (`time_tot`: float)
+
+Note: the naming convention of the mat file is as follows:
+
+```bash
+`results_<optimization mode>_<number of noisy images>_<number of blocks per RDD>_<experiment id>_n<number of optimization iterations>`.mat
+```
 
 ## Execution Examples
 
+Considering the following cluster-specific parameters:
 
-### Optimization based on low-rank approximation
+`$SPARK` = `/usr/local/spark`, `<IP of master node>` = `147.52.17.68`, 
+
+the following input stack of noisy images / PSFs:
+
+`<input stack of noisy data>`.npy  = `example_data/100x41x41/example_image_stack`.npy, `<input psf>`.npy  = `example_data/100x41x41/example_psfs`.npy,
+
+and `<number of optimization iterations>` = 100, `<number of blocks per RDD>` = `96`, `<application log file>`.txt = `test`.txt, 
+`spark_log_file`.out = `spark_log`.out, the input entry at runexper.sh becomes as follows:
+
+1. For the low-rank based optimization (i.e. `<optimization mode>` = `lowr`):
+```bach
+/usr/local/spark/bin/spark-submit --master spark://147.52.17.68:7077 --py-files lib.zip,sf_tools.zip  ds_psf_deconvolve.py -i example_data/100x41x41/example_psfs.npy -p example_data/100x41x41/example_psfs.npy --n_iter 100 --mode lowr --pn 48 > test.txt
+
+mv log.out spark_log.out
+```
+
+2. For the sparsity-based optimization (i.e. `optimization mode` = `sparse`):
+```bach
+/usr/local/spark/bin/spark-submit --master spark://147.52.17.68:7077 --py-files lib.zip,sf_tools.zip  ds_psf_deconvolve.py -i example_data/100x41x41/example_psfs.npy -p example_data/100x41x41/example_psfs.npy --n_iter 100 --mode sparse --pn 48 > test.txt
+
+mv log.out spark_log.out
+```
+
+Save and execute the runexper.sh file. Open a command terminal and from software module execute runexper.sh, i.e.
+
+```
+$ ./runexper.sh
+```
+
+The status of execution is indicated at the cluster web-interface:
 
 
-### Sparsity-based optimization
 
 
-### Large-scale benchmark data and results.
+
+### Large-scale imaging datasets and results
+
 
 
 ## Reference Documents: 
@@ -87,3 +145,5 @@ Note: A complete list of all input parameters for the noisy stack images deconvo
 
 * S.  Farrens,  F.M.  Ngole  Mboula,  and  J.-L.  Starck,  “Space variant deconvolution of galaxy survey images,”  Astronomy and 
 & Astrophysics, vol. 601, A66 , 2017.
+
+* A. Panousopoulou, S. Farrens, S., Y. Mastorakis, J.L. Starck, P. Tsakalides, "," DEDALE Deliverable D4.2, 2016.
