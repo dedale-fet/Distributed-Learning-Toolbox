@@ -226,24 +226,23 @@ def normD(dictin):
     the normalized dictionary (2D)   
     """
     
+    tmp1 = np.sum(np.multiply(dictin, dictin), axis=0)
+    for k in range(len(tmp1)):
+        if tmp1[k] == 0:
+            tmp1[k] = 1e-6
     
-    tmp = 1 / np.sqrt(np.sum(np.multiply(dictin, dictin), axis=0))
+    #tmp = 1 / np.sqrt(np.sum(np.multiply(dictin, dictin), axis=0))
+    tmp = 1 / np.sqrt(tmp1)
+    print(np.array(tmp1))
     return np.dot(dictin, np.diag(tmp))
 
 #################################################################################
 
 def run_script(sc):
     """
-    The main execution script
     
-    Input Arguments
-    ----------
-    sc : Spark Context Object
-        The spark context object containing the primary spark configuration parameters
-        
-        
-    Returns:
-    1 (all results are stored in a designated mat file)
+    
+    
     """
     
     
@@ -423,9 +422,14 @@ def run_script(sc):
         dict_h = normD(dict_h_upd)
         #b. low resolution
         phi_l = np.reshape(phi_l, ((1, len(phi_l)))) + delta
-        dict_l_upd = dict_l + sw_l/(phi_l)
-        dict_l = normD(dict_l_upd)
         
+        dict_l_upd = dict_l + sw_l/(phi_l)
+        
+
+        
+        dict_l = normD(dict_l_upd)
+        print('dict_l upd')
+        print(np.array(dict_l))
         #clean up your garbage!
         sc._jvm.System.gc()
 
@@ -435,7 +439,8 @@ def run_script(sc):
         if (k + 1) % wind == 0:
             
             err_all = tmp.map(lambda x: calcErr(dict_h, dict_l,x)).reduce(lambda x,y: calcSum2(x,y))
-        
+            print('err_l')
+            print(np.array(err_all[1]))
             err_h = math.sqrt(np.sum(np.array(err_all[0])) / (bands_h_N * imageN))
             err_l = math.sqrt(np.sum(np.array(err_all[1])) / (bands_l_N * imageN))
             
@@ -523,7 +528,7 @@ def run_script(sc):
         
     mat2savefin =  './results_fin' + str(imageN) + 'x' + str(dictsize) + '_' +str(partitions_N) + '.mat'  
         
-    sio.savemat(mat2savefin, {'dicth':dict_h, 'dictl': dict_l, 'err_l': err_h_all, 'err_h': err_l_all, 'time_all': time_all})
+    sio.savemat(mat2savefin, {'dicth':dict_h, 'dictl': dict_l, 'err_l': err_l_all, 'err_h': err_h_all, 'time_all': time_all})
         
     return 1
 
