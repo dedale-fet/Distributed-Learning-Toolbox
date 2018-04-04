@@ -234,9 +234,16 @@ def normD(dictin):
 
 def run_script(sc):
     """
+    The main execution script
     
-    
-    
+    Input Arguments
+    ----------
+    sc : Spark Context Object
+        The spark context object containing the primary spark configuration parameters
+        
+        
+    Returns:
+    1 (all results are stored in a designated mat file)
     """
     
     
