@@ -121,9 +121,9 @@ The status of execution is indicated at the cluster web-interface:
 
 
 ### Large-scale training datasets and results
-Considering a stack of 39998 training samples and dictionaries of 1024 atoms the normalized RMSE  for the high and low dictionaries are:
+Considering a stack of 39998 training samples and dictionaries of of either 512 or 1024 atoms the normalized RMSE  for the high and low dictionaries are:
 
-![](../docs//images/distributed-scdl/HS_errh_10mins_1024.png) ![](../docs//images/distributed-scdl/HS_errl_10mins_1024.png)
+![](../docs//images/distributed-scdl/results.png)
 
 
 ## Reference Documents: 
