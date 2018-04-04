@@ -523,7 +523,7 @@ def run_script(sc):
         
     mat2savefin =  './results_fin' + str(imageN) + 'x' + str(dictsize) + '_' +str(partitions_N) + '.mat'  
         
-    sio.savemat(mat2save, {'dicth':dict_h, 'dictl': dict_l, 'err_l': err_h_all, 'err_h': err_l_all, 'time_all': time_all})
+    sio.savemat(mat2savefin, {'dicth':dict_h, 'dictl': dict_l, 'err_l': err_h_all, 'err_h': err_l_all, 'time_all': time_all})
         
     return 1
 
