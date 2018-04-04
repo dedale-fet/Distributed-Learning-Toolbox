@@ -1,6 +1,6 @@
 # DEDALE Distributed Learning Toolbox (D4.3)
 
-> Toolbox Main Authors: **Nancy Panousopoulou (FORTH-ICS), Samuel Farrens (CEA), Konstantina Fotiadou (FORTH-ICS), Greg Tsagkatakis (FORTH-ICS)**  
+> Toolbox Main Authors: **Nancy Panousopoulou (FORTH-ICS), Samuel Farrens (CEA), Konstantina Fotiadou (FORTH-ICS), Greg Tsagkatakis (FORTH-ICS), Arnauld Woiselle (SAFRAN)**  
 > Year: **2017-2018**   
 > Corresponding Author Email: [apanouso@ics.forth.gr](mailto:apanouso@ics.forth.gr)
 > Website: [https://github.com/dedale-fet](https://github.com/dedale-fet)  
@@ -60,7 +60,7 @@ Each of these packages should be installed on all terminals which will comprise 
 
 		- Define the port number for the spark cluster web-interface: Edit line 28 of the file `$SPARK/spark-defaults.conf` to indicate the URL for the spark cluster web interface. For example if the IP of the master terminal is `XXX.XXX.XXX.XXX` then assign: `spark.master spark://XXX.XXX.XXX.XXX:7077` 
 
-		- Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties' file ( `$SPARK\conf\log4j.properties` )
+		- Define the location of the logging configuration: Edit the value of `-Dlog4j.configuration` at line 34 to indicate the location of the `log4j.properties` file ( `$SPARK\conf\log4j.properties` )
 
 		- (If needed:) Define the memory size allocated at the master for spark calculations by accordingly changing the value of variable `spark.driver.memory` at line 32 (in the current configuration: 8GB of RAM) 
 
