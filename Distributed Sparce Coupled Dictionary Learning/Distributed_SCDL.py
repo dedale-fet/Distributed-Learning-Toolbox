@@ -234,18 +234,15 @@ def normD(dictin):
 
 def run_script(sc):
     """
-    The main execution script.
     
-    Input arguments:
-    ----------------
-    sc: Spark Context
-    	The spark context containing the basic configuration of the parallized execution
     
-    Returns:
-    -----------
-    1 (dictionaries and execution times are saved in a mat file)
     
     """
+    
+    
+    
+    
+    
     
     #the size of the image
     imageN = opts.imageN
@@ -342,7 +339,7 @@ def run_script(sc):
     
     m = 0
     mm = 0
-	time_all = []	
+    time_all = []	
     ##keep the error buffer size as an even number.
     if buff_size % 2 == 1:
         buff_size += 1

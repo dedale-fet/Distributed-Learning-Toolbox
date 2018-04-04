@@ -112,6 +112,16 @@ def get_opts(args=None):
 
     optional.add_argument('--lamda', type=float, default=0.1, help='Learning Rate')
     
+    optional.add_argument('--c1', type=float, default=0.4)
+    optional.add_argument('--c2', type=float, default=0.4)
+    optional.add_argument('--c3', type=float, default=0.8)
+    
+    optional.add_argument('--maxbeta', type=float, default=1e+6)
+    
+    optional.add_argument('--delta', type=float, default=1e-4)
+    
+    optional.add_argument('--beta', type=float, default=0.01)
+    
     required.add_argument('-p', '--partitions', help = 'Number of Partitions')
     
     
