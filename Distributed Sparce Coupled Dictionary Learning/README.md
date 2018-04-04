@@ -117,13 +117,13 @@ $ ./runexper.sh
 
 The status of execution is indicated at the cluster web-interface:
 
-![](../docs//images/distributed-psf/execution_example.png)
+![](../docs//images/distributed-scdl/execution_example.png)
 
 
 ### Large-scale training datasets and results
-Considering a stack of 39998 training samples and dictionaries of 1024 atoms the results of the distributed sparse coupled dictionary training are as follows:
+Considering a stack of 39998 training samples and dictionaries of 1024 atoms the normalized RMSE  for the high and low dictionaries are:
 
-![](../docs//images/distributed-psf/results20000.png)
+![](../docs//images/distributed-scdl/HS_errh_10mins_1024.png) ![](../docs//images/distributed-scdl/HS_errl_10mins_1024.png)
 
 
 ## Reference Documents: 
