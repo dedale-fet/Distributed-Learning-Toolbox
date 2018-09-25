@@ -18,7 +18,7 @@ The toolbox implements the Dedale Distributed Learning Architecture for solving 
 
 Prior referring to the the documentation in each sub-folder on how to use the toolbox for each application, please read the following guidelines the prerequisities of the toolbox.
 
-Sample datasets are available [here](https://drive.google.com/drive/folders/1TxqH0F4qtVzLAUlUwLWHFq-_vVIDMqbs):  
+Sample datasets are available [here](https://drive.google.com/drive/folders/1TxqH0F4qtVzLAUlUwLWHFq-_vVIDMqbs). 
 
 
 ## Prerequisities of the toolbox
