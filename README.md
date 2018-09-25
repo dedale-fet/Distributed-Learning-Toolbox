@@ -18,6 +18,8 @@ The toolbox implements the Dedale Distributed Learning Architecture for solving 
 
 Prior referring to the the documentation in each sub-folder on how to use the toolbox for each application, please read the following guidelines the prerequisities of the toolbox.
 
+Sample datasets are available [here] (https://drive.google.com/drive/folders/1TxqH0F4qtVzLAUlUwLWHFq-_vVIDMqbs):  
+
 
 ## Prerequisities of the toolbox
 
@@ -97,6 +99,8 @@ For the complete documentation on spark standalone clusters please refer [here](
 
 
 ## Reference Documents: 
+
+* A. Panousopoulou, S. Farrens, K. Fotiadou, A. Woiselle, G. Tsagkatakis, J-L Starck, P. Tsakalides. (2018). A Distributed Learning Architecture for Scientific Imaging Problems. arXiv preprint arXiv:1809.05956.
 
 * K.  Fotiadou, G. Tsagkatakis, P. Tsakalides, "Linear Inverse Problems with Sparsity Constraints," DEDALE DELIVERABLE 3.1, 2016.  
 
